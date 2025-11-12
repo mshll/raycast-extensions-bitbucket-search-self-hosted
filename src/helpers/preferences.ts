@@ -4,6 +4,6 @@ export const preferences: Preferences = getPreferenceValues();
 
 export interface Preferences {
   token: string;
-  baseURL: string;
-  unsafeHTTPS?: boolean;
+  domain: string;
+  unsafeHTTPS: boolean;
 }

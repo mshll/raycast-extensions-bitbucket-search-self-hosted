@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Repository } from "../types";
 import { PullRequest } from "../types";
 import { pullRequestsGetQuery } from "./../../queries";
-import { preferences } from "../../helpers/preferences";
+import { bitbucketUrl } from "../../helpers/bitbucket";
 
 interface State {
   pullRequests?: PullRequest[];
@@ -28,7 +28,7 @@ export function PullRequestsList(props: { repo: Repository; pageNumber: number }
           },
           commentCount: (pr.properties.commentCount || 0) as number,
           author: {
-            url: `${preferences.baseURL}${pr.author.user.avatarUrl}` as string,
+            url: `${bitbucketUrl}${pr.author.user.avatarUrl}` as string,
             nickname: pr.author.user.name as string,
           },
           repositoryUrl: props.repo.url,

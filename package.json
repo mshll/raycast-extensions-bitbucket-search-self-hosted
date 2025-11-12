@@ -30,13 +30,13 @@
   ],
   "preferences": [
     {
-      "name": "baseURL",
+      "name": "domain",
       "type": "textfield",
-      "title": "URL",
+      "title": "Domain",
       "required": true,
       "default": "",
-      "description": "Bitbucket URL",
-      "placeholder": "https://api.bitbucket-self-hosted.com"
+      "description": "Bitbucket Domain",
+      "placeholder": "bitbucket.example.com"
     },
     {
       "name": "token",
@@ -52,8 +52,8 @@
       "type": "checkbox",
       "title": "Unsafe HTTPS",
       "label": "Allow self-signed certificates",
-      "required": false,
-      "default": false,
+      "required": true,
+      "default": true,
       "description": "Disable SSL certificate validation (use for self-signed certificates)"
     }
   ],

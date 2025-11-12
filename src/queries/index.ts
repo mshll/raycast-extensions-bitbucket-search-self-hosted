@@ -1,8 +1,9 @@
-import fetch from "node-fetch";
-import * as https from "https";
-import { preferences } from "../helpers/preferences";
+import { bitbucketFetchObject } from "../helpers/bitbucket";
 
-const agent = new https.Agent({ rejectUnauthorized: !preferences.unsafeHTTPS });
+interface RepositoriesResponse {
+  values: any[];
+  nextPageStart?: number;
+}
 
 /**
  * @param key
@@ -11,21 +12,23 @@ const agent = new https.Agent({ rejectUnauthorized: !preferences.unsafeHTTPS });
  * @returns
  * @see https://developer.atlassian.com/server/bitbucket/rest/v805/api-group-repository/#api-api-latest-repos-get
  */
-export async function getRepositories(key: string, start = 0, repositories = []): Promise<any[]> {
-  const data = (await fetch(`${preferences.baseURL}/rest/api/latest/repos?start=${start}&limit=200`, {
-    headers: {
-      Authorization: `Bearer ${preferences.token}`,
-      "Content-Type": "application/json",
-    },
-    agent,
-  }).then((res) => res.json())) as any;
+export async function getRepositories(key: string, start = 0, repositories: any[] = []): Promise<any[]> {
+  const data = await bitbucketFetchObject<RepositoriesResponse>("/rest/api/latest/repos", {
+    start,
+    limit: 200,
+  });
 
-  repositories = repositories.concat(data.values as []);
+  repositories = repositories.concat(data.values);
   if (data.nextPageStart) {
     return getRepositories(key, data.nextPageStart, repositories);
   }
 
   return repositories;
+}
+
+interface PullRequestsResponse {
+  values: any[];
+  nextPageStart?: number;
 }
 
 /**
@@ -38,20 +41,19 @@ export async function getRepositories(key: string, start = 0, repositories = [])
 export async function pullRequestsGetQuery(
   repository: { project: { key: string }; slug: string },
   start = 0,
-  pullRequests = []
+  pullRequests: any[] = []
 ): Promise<any[]> {
-  const data = (await fetch(
-    `${preferences.baseURL}/rest/api/latest/projects/${repository.project.key}/repos/${repository.slug}/pull-requests?avatarSize=64&order=newest&state=OPEN&start=${start}`,
+  const data = await bitbucketFetchObject<PullRequestsResponse>(
+    `/rest/api/latest/projects/${repository.project.key}/repos/${repository.slug}/pull-requests`,
     {
-      headers: {
-        Authorization: `Bearer ${preferences.token}`,
-        "Content-Type": "application/json",
-      },
-      agent,
+      avatarSize: 64,
+      order: "newest",
+      state: "OPEN",
+      start,
     }
-  ).then((res) => res.json())) as any;
+  );
 
-  pullRequests = pullRequests.concat(data.values as []);
+  pullRequests = pullRequests.concat(data.values);
   if (data.nextPageStart) {
     return pullRequestsGetQuery(repository, data.nextPageStart, pullRequests);
   }
@@ -65,19 +67,13 @@ export async function pullRequestsGetQuery(
  * @returns
  * @see https://developer.atlassian.com/server/bitbucket/rest/v805/api-group-dashboard/#api-api-latest-dashboard-pull-requests-get
  */
-export async function getMyOpenPullRequests(start = 0, pullRequests = []): Promise<any[]> {
-  const data = (await fetch(
-    `${preferences.baseURL}/rest/api/latest/dashboard/pull-requests?state=OPEN&start=${start}`,
-    {
-      headers: {
-        Authorization: `Bearer ${preferences.token}`,
-        "Content-Type": "application/json",
-      },
-      agent,
-    }
-  ).then((res) => res.json())) as any;
+export async function getMyOpenPullRequests(start = 0, pullRequests: any[] = []): Promise<any[]> {
+  const data = await bitbucketFetchObject<PullRequestsResponse>("/rest/api/latest/dashboard/pull-requests", {
+    state: "OPEN",
+    start,
+  });
 
-  pullRequests = pullRequests.concat(data.values as []);
+  pullRequests = pullRequests.concat(data.values);
   if (data.nextPageStart) {
     return getMyOpenPullRequests(data.nextPageStart, pullRequests);
   }

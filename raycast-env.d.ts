@@ -8,8 +8,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** URL - Bitbucket URL */
-  "baseURL": string,
+  /** Domain - Bitbucket Domain */
+  "domain": string,
   /** Personal Access Token - Bitbucket Personal Access Token */
   "token": string,
   /** Unsafe HTTPS - Disable SSL certificate validation (use for self-signed certificates) */

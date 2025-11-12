@@ -1,7 +1,7 @@
 import { ActionPanel, List, Action, showToast, Color, Toast, Image } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { PullRequest } from "./components/types";
-import { preferences } from "./helpers/preferences";
+import { bitbucketUrl } from "./helpers/bitbucket";
 import { getMyOpenPullRequests } from "./queries";
 
 interface State {
@@ -19,7 +19,7 @@ const toPullRequest = (pr: any): PullRequest => {
     },
     commentCount: (pr.properties.commentCount || 0) as number,
     author: {
-      url: `${preferences.baseURL}/users/${pr.author.user.name}/avatar.png` as string,
+      url: `${bitbucketUrl}/users/${pr.author.user.name}/avatar.png` as string,
       nickname: pr.author.user.name as string,
     },
     url: pr.links?.self[0]?.href,
